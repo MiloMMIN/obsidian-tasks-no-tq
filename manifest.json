@@ -1,12 +1,10 @@
 {
   "id": "obsidian-tasks-no-tq",
   "name": "Tasks No TQ",
-  "version": "7.22.0-no-tq.1",
+  "version": "1.0.0",
   "minAppVersion": "1.4.0",
-  "description": "Custom fork of Tasks that disables automatic TQ_* property type registration.",
-  "helpUrl": "https://publish.obsidian.md/tasks/",
-  "author": "Clare Macrae and Ilyas Landikov (created by Martin Schenck)",
-  "authorUrl": "https://github.com/obsidian-tasks-group",
-  "fundingUrl": "https://github.com/sponsors/claremacrae",
+  "description": "Automatically removes TQ_* property types registered by the Tasks plugin.",
+  "author": "MiloMMIN",
+  "authorUrl": "https://github.com/MiloMMIN",
   "isDesktopOnly": false
 }

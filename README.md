@@ -1,119 +1,60 @@
-# obsidian-tasks-no-tq
+﻿# Tasks No TQ
 
-A small custom fork of the Obsidian Tasks plugin that stops Tasks from auto-registering `TQ_*` property types on startup.
+一个独立的 Obsidian 轻量插件，自动清除 Tasks 插件注册的 `TQ_*` 属性类型。
 
-## What this fork changes
+**与原版 Tasks 插件完全独立，不包含任何 Tasks 功能。**
 
-This fork keeps the normal Tasks plugin behavior, but removes the startup call that writes `TQ_*` property types back into Obsidian.
+## 它做什么
 
-Without this change, entries like these can reappear in `.obsidian/types.json` after restarting Obsidian:
+原版 Tasks 插件每次启动时会往 Obsidian 的属性类型注册表（`.obsidian/types.json`）里写入大量 `TQ_*` 属性：
 
-- `TQ_explain`
-- `TQ_extra_instructions`
-- `TQ_short_mode`
-- `TQ_show_*`
+- `TQ_explain`, `TQ_extra_instructions`, `TQ_short_mode`
+- `TQ_show_toolbar`, `TQ_show_tree`, `TQ_show_tags`, `TQ_show_id` ...
+- 共 22 个 `TQ_*` 属性
 
-This fork disables only that startup registration behavior.
+本插件的唯一功能：**启动后自动删除这些 `TQ_*` 属性类型**。
 
-## Why this exists
+工作方式：
+1. Obsidian 启动后，等待布局就绪（Tasks 已加载完毕），延迟 3 秒后执行清理
+2. 每 60 秒自动检查一次，防止 Tasks 重新注册
+3. 同时清理内存中的属性注册表和磁盘上的 `types.json`
+4. 提供命令面板命令 `Remove TQ_* property types now` 供手动触发
 
-The upstream Tasks plugin bundle includes logic that registers `TQ_*` property types when the plugin loads.
+## 安装（BRAT）
 
-If you manually remove those property definitions from `.obsidian/types.json`, they can come back on the next Obsidian restart.
+1. 确保已安装 [BRAT](https://github.com/TfTHacker/obsidian42-brat) 插件
+2. 打开 `设置 -> 第三方插件 -> BRAT`
+3. 选择 `Add Beta plugin`
+4. 输入仓库地址：`MiloMMIN/obsidian-tasks-no-tq`
+5. 安装并启用 `Tasks No TQ`
+6. **保持原版 Tasks 插件正常启用**（本插件不替代 Tasks）
+7. 重启 Obsidian
 
-This fork exists for users who want to keep using Tasks without having those `TQ_*` property type entries recreated automatically.
+## 使用方式
 
-## Plugin information
+安装启用后无需任何操作，插件会自动在后台清理 `TQ_*` 属性。
 
-- Plugin name: `Tasks No TQ`
-- Plugin ID: `obsidian-tasks-no-tq`
-- Based on: Tasks `7.22.0`
-- Current version: `7.22.0-no-tq.1`
+如需手动清理，可以打开命令面板（Ctrl+P）搜索 `Remove TQ_* property types now`。
 
-## Files kept at repository root
+## 一次性清理脚本
 
-This repository keeps only the files BRAT needs at the root:
+如果需要额外清理笔记 frontmatter 中残留的 `TQ_*` 属性，可使用附带的清理脚本：
 
-- `manifest.json`
-- `main.js`
-- `styles.css`
+```bash
+# 预览模式（不修改文件）
+node scripts/cleanup-tq-once.mjs "你的库路径"
 
-## Install in Obsidian with BRAT
-
-1. Install and enable the BRAT plugin in Obsidian.
-2. Open `Settings -> Community plugins -> BRAT`.
-3. Choose `Add Beta plugin`.
-4. Paste this repository:
-   - `MiloMMIN/obsidian-tasks-no-tq`
-5. Install `Tasks No TQ`.
-6. Enable `Tasks No TQ` in Community Plugins.
-7. Disable the upstream `Tasks` plugin if it is still enabled.
-8. Restart Obsidian once.
-
-## 中文快速开始
-
-如果你只是想尽快用起来，可以直接按下面做：
-
-1. 在 Obsidian 里确认已经安装 BRAT。
-2. 打开 `设置 -> 第三方插件 -> BRAT`。
-3. 选择 `Add Beta plugin`。
-4. 输入仓库地址：
-   - `MiloMMIN/obsidian-tasks-no-tq`
-5. 安装并启用 `Tasks No TQ`。
-6. 把原来的 `Tasks` 插件停用。
-7. 重启 Obsidian。
-8. 如果 `.obsidian/types.json` 里还有旧的 `TQ_*` 项，删一次后再重启确认不再回来了。
-
-## How to use it in Obsidian
-
-After installation, usage is the same as the normal Tasks plugin.
-
-You can continue to:
-
-- write Tasks checkboxes in notes
-- use Tasks queries
-- use the existing Tasks commands from the command palette
-- keep your current Tasks-based workflow
-
-The practical difference is only this:
-
-- `Tasks No TQ` will not automatically recreate `TQ_*` property type entries on startup
-
-## Typical usage examples
-
-You can use it exactly like standard Tasks, for example:
-
-```markdown
-- [ ] Finish the report 📅 2026-03-20
-- [ ] Review weekly notes
+# 执行清理
+node scripts/cleanup-tq-once.mjs "你的库路径" --write
 ```
 
-And query them in a note:
+脚本功能：
+- 删除 `.obsidian/types.json` 中的 `TQ_*` 条目
+- 删除所有 `.md` 文件 frontmatter 中的 `TQ_*` 属性
+- 默认预览模式，需 `--write` 才实际修改
 
-```tasks
-not done
-sort by due
-```
+## 插件信息
 
-If your previous workflow already relied on Tasks, you do not need to change your note syntax just to use this fork.
-
-## Recommended migration steps
-
-If you are switching from the upstream Tasks plugin:
-
-1. Install and enable `Tasks No TQ`.
-2. Disable the original `Tasks` plugin.
-3. Restart Obsidian.
-4. Open `.obsidian/types.json` and remove unwanted `TQ_*` entries one last time if they are still present.
-5. Restart Obsidian again and confirm they do not come back.
-
-## Technical note
-
-The removed startup behavior is the call to `this.setObsidianPropertiesTypes()` during plugin load.
-
-The related helper code still exists in the bundle, but it is no longer executed automatically on startup.
-
-## Notes for maintenance
-
-- If you want newer upstream fixes later, update from upstream and re-apply the same startup-call removal.
-- Keep the plugin ID stable once users install it through BRAT.
+- 插件名：`Tasks No TQ`
+- 插件 ID：`obsidian-tasks-no-tq`
+- 版本：`1.0.0`
