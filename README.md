@@ -4,6 +4,8 @@
 
 **与原版 Tasks 插件完全独立，不包含任何 Tasks 功能。**
 
+当前修复版本：`1.0.1`
+
 ## 它做什么
 
 原版 Tasks 插件每次启动时会往 Obsidian 的属性类型注册表（`.obsidian/types.json`）里写入大量 `TQ_*` 属性：
@@ -12,12 +14,12 @@
 - `TQ_show_toolbar`, `TQ_show_tree`, `TQ_show_tags`, `TQ_show_id` ...
 - 共 22 个 `TQ_*` 属性
 
-本插件的唯一功能：**启动后自动删除这些 `TQ_*` 属性类型**。
+本插件的唯一功能：**阻止并清理这些 `TQ_*` 属性类型**。
 
 工作方式：
-1. Obsidian 启动后，等待布局就绪（Tasks 已加载完毕），延迟 3 秒后执行清理
-2. 每 60 秒自动检查一次，防止 Tasks 重新注册
-3. 同时清理内存中的属性注册表和磁盘上的 `types.json`
+1. 启动时安全拦截 Tasks 对 `metadataTypeManager.setType()` 的 `TQ_*` 写入
+2. 过滤属性查询结果，避免 `TQ_*` 出现在属性建议中
+3. 清理磁盘上的 `.obsidian/types.json`
 4. 提供命令面板命令 `Remove TQ_* property types now` 供手动触发
 
 ## 安装（BRAT）
@@ -57,4 +59,4 @@ node scripts/cleanup-tq-once.mjs "你的库路径" --write
 
 - 插件名：`Tasks No TQ`
 - 插件 ID：`obsidian-tasks-no-tq`
-- 版本：`1.0.0`
+- 版本：`1.0.1`

@@ -1,7 +1,7 @@
 {
   "id": "obsidian-tasks-no-tq",
   "name": "Tasks No TQ",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minAppVersion": "1.4.0",
   "description": "Automatically removes TQ_* property types registered by the Tasks plugin.",
   "author": "MiloMMIN",
